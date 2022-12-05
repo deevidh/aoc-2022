@@ -1,4 +1,5 @@
-from aocd import data, get, submit  # https://github.com/wimglenn/advent-of-code-data
+from aocd.models import Puzzle # https://github.com/wimglenn/advent-of-code-data
+from aocd import get, submit
 
 class puzzle:
     '''
@@ -7,17 +8,13 @@ class puzzle:
     '''
     def __init__(self):
         '''
-        Constructs a puzzle instance by automatically retrieving the puzzle input data from the server, and retrieving
-        the test input data from a local txt file.
+        Constructs a puzzle instance by automatically retrieving the puzzle input data and example input.
 
-        The puzzle input data is retrieved directly from the server using the aocd module.
+        The puzzle input data and the example/test input are retrieved directly from the server using the aocd module.
+        The expected answer for the example input must be retrieved manually from the puzzle description and should be passed
+        as an argument to the test or test_and_submit functions.
 
-        The test input data comes from the AOC puzzle description and it is not retrieved automatically. A local text
-        file containing the test input data must be created manually at `./test_data/dayN.py`
-        The expected answer for the test data must also be retrieved manually from the puzzle description and should
-        be passed as an argument to the test or test_and_submit functions.
-
-        NOTE: The retrieval of both the puzzle input data and test input data require file path introspection to figure out
+        NOTE: The retrieval of both the puzzle input data and example input uses file path introspection to figure out
         what day's data to retrieve. This means that in the name of the file where you are implementing this class must
         clearly contain a number (eg day3.py).
 
@@ -25,32 +22,35 @@ class puzzle:
         ----------
             None
         '''
-        # Get test input from local file
-        self.test_input_filename = f"./test_data/day{get.get_day_and_year()[0]}.txt"
-        with open(self.test_input_filename) as f:
-                self.test_input = f.read().splitlines()
+        # Get day using filename introspection
+        self.aocd_year=get.get_day_and_year()[1]
+        self.aocd_day=get.get_day_and_year()[0]
 
-        # Get puzzle input from server using aocd
+        # Get puzzle input and example input from server using aocd
         # "Note that aocd will cache puzzle inputs and answers (including incorrect guesses) clientside, to save unnecessary requests to the server."
-        self.puzzle_input = data.splitlines()
+        self.aocd_puzzle = Puzzle(year=self.aocd_year, day=self.aocd_day)
+        self.test_input = self.aocd_puzzle.example_data.splitlines()
+        self.puzzle_input = self.aocd_puzzle.input_data.splitlines()
 
-    def test(self, solution: callable, expected_answer: int) -> bool:
+        print(f"Welcome to Advent of Code day {self.aocd_day}: {self.aocd_puzzle.title}\n{self.aocd_puzzle.url}\n")
+
+    def test(self, solution: callable, expected_answer: int or str) -> bool:
         '''
-        Tests the supplied solution by running it using this puzzle's test input data, and evaluating the result against the supplied expected answer
+        Tests the supplied solution by running it using this puzzle's example input, and evaluating the result against the supplied example answer
 
         Parameters
         ----------
         test_solution : function
-            The solution which should be run using the test input data
-        expected_answer: int
-            The answer which we expect our solution to yield when run using the test input data
+            The solution which should be run using the example input
+        example_answer: int or str
+            The answer which we expect our solution to yield when run using the example input
 
         Returns
         -------
         result: bool
-            Whether the result from the solution matched the supplied expected answer
+            Whether the result from the solution matched the supplied example answer
         '''
-        print(f"Testing solution using test input from {self.test_input_filename}...")
+        print(f"Testing solution using example input...")
         result = solution(self.test_input)
         if result == expected_answer:
             print(f"Result: {result} (PASS)")
@@ -61,7 +61,7 @@ class puzzle:
 
     def submit(self, solution: callable):
         '''
-        Runs the supplied solution using this puzzle's test input data, and submits the answer to the server.
+        Runs the supplied solution using this puzzle's input data, and submits the answer to the server.
 
         Parameters
         ----------
@@ -76,10 +76,11 @@ class puzzle:
         result = solution(self.puzzle_input)
         print(f"Result: {result}")
         print(f"Submitting...")
+        #self.aocd_puzzle.submit(result)
         submit(result)
 
         '''
-        Tests the supplied solution using the test input data, and if it is successful then runs the solution
+        Tests the supplied solution using the example input, and if it is successful then runs the solution
         with the real puzzle input and submits the result. This function combines the test and submit functions
         from this class, please see the documentation for those functions for more information.
 
@@ -87,15 +88,15 @@ class puzzle:
         ----------
         solution : function
             The solution which should be tested and then used to submit an answer
-        expected_answer: int
-            The answer which we expect our solution to yield when run using the test input data
+        expected_answer: int or str
+            The answer which we expect our solution to yield when run using the example input
 
         Returns
         -------
         result: bool
-            Whether the result from the solution matched the supplied expected answer
+            Whether the result from the solution matched the supplied example answer
         '''
-    def test_and_submit(self, solution: callable, expected_answer: int) -> bool:
+    def test_and_submit(self, solution: callable, expected_answer: int or str) -> bool:
         if self.test(solution, expected_answer):
             self.submit(solution)
             return True
