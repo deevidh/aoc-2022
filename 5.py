@@ -2,13 +2,16 @@ from dave_utils import puzzle
 
 def parse_stacks(input):
     stacks_input = [row for row in input if "[" in row]
-    columns = int((len(stacks_input[0])+1)/4) # This logic supports a max of 9 columns
-    stacks = [[] for i in range(columns)]
-    for row in stacks_input:
-        for column in range(columns):
-            box = row[(column*4)+1]
-            if box != " ": stacks[column].insert(0, box)
-    return stacks
+    #Update: I finally managed to do this with a list comprehension :-)
+    return [list(reversed(list(filter(lambda x: x != " ", stack)))) for stack in map(list,zip(*[row[1::4] for row in stacks_input]))]
+
+    #columns = int((len(stacks_input[0])+1)/4) # This logic supports a max of 9 columns
+    #stacks = [[] for i in range(columns)]
+    #for row in stacks_input:
+    #    for column in range(columns):
+    #        box = row[(column*4)+1]
+    #        if box != " ": stacks[column].insert(0, box)
+    #return stacks
 
 def parse_instructions(input):
     instructions = [[int(i) for i in row.split() if i.isdigit()] for row in input if "move" in row ]
