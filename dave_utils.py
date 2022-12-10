@@ -103,3 +103,25 @@ class puzzle:
         else:
             print(f"Test failed, not proceeding with puzzle data")
             return False
+
+    def run(self, solution: callable):
+        '''
+        Runs the supplied solution using this puzzle's input data, but doesn't submit anything to the server.
+        This was added 2022, day 10 which requires a human to interpret the output (unless you want to get really fancy!)
+
+        Parameters
+        ----------
+        solution : function
+            The solution which should be run using the puzzle input data
+
+        Returns
+        -------
+        Nothing
+        '''
+        print(f"Running solution using puzzle input...")
+        result = solution(self.puzzle_input)
+        print(f"Result: {result}")
+
+
+def chunker(seq, size):
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
