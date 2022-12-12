@@ -9,3 +9,7 @@ Using Python isn't particularly imaginative for me, this is the same language I'
 ## New this year
 
 I've been using the [Advent of Code data (aocd)](https://github.com/wimglenn/advent-of-code-data) module for years - I think it's brilliant. However this year I've gone a little further and created a class with some utility functions to help me test my solutions against the example input and answer provided in the puzzle descriptions, and then to submit my solutions using aocd. For more information have a look in `dave_utils.py`.
+
+## Thing I Learned
+
+There are some additional notes on things I learned in [TIL.md](TIL.md).
